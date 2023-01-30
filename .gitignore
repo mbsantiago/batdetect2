@@ -8,3 +8,7 @@
 experiments/*
 plots/*
 
+example_data/anns/
+
+.pdm.toml
+.ropeproject/
