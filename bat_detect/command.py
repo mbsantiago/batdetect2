@@ -3,6 +3,8 @@ import os
 
 import bat_detect.utils.detector_utils as du
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 def parse_args():
 
@@ -64,7 +66,7 @@ def parse_args():
     parser.add_argument(
         "--model_path",
         type=str,
-        default="models/Net2DFast_UK_same.pth.tar",
+        default=os.path.join(CURRENT_DIR, "models/Net2DFast_UK_same.pth.tar"),
         help="Path to trained BatDetect2 model",
     )
     args = vars(parser.parse_args())
