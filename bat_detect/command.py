@@ -75,6 +75,7 @@ def parse_args():
     # if files greater than this amount (seconds) they will be broken down into small chunks
     args["chunk_size"] = 2
     args["ann_dir"] = os.path.join(args["ann_dir"], "")
+    args["quiet"] = True
 
     return args
 
@@ -93,7 +94,6 @@ def main():
     # process files
     error_files = []
     for ii, audio_file in enumerate(files):
-        print("\n" + str(ii).ljust(6) + os.path.basename(audio_file))
         try:
             results = du.process_file(audio_file, model, params, args)
             if args["save_preds_if_empty"] or (
