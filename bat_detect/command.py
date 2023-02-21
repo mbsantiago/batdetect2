@@ -1,13 +1,14 @@
 import argparse
 import os
 
+import torch
+
 import bat_detect.utils.detector_utils as du
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def parse_args():
-
     info_str = (
         "\nBatDetect2 - Detection and Classification\n"
         + "  Assumes audio files are mono, not stereo.\n"
@@ -81,10 +82,18 @@ def parse_args():
 
 
 def main():
+    torch.jit.enable_onednn_fusion(True)
+
     args = parse_args()
 
     print("Loading model: " + args["model_path"])
     model, params = du.load_model(args["model_path"])
+
+    sample_input = [torch.rand(1, 1, 128, 1024)]
+    # Tracing the model with example input
+    traced_model = torch.jit.trace(model, sample_input)
+    # Invoking torch.jit.freeze
+    traced_model = torch.jit.freeze(traced_model)
 
     print("\nInput directory: " + args["audio_dir"])
     files = du.get_audio_files(args["audio_dir"])
@@ -95,7 +104,7 @@ def main():
     error_files = []
     for ii, audio_file in enumerate(files):
         try:
-            results = du.process_file(audio_file, model, params, args)
+            results = du.process_file(audio_file, traced_model, params, args)
             if args["save_preds_if_empty"] or (
                 len(results["pred_dict"]["annotation"]) > 0
             ):
